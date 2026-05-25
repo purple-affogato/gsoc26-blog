@@ -1,0 +1,11 @@
+baseURL = 'https://purple-affogato.github.io/rtems-gsoc26/'
+languageCode = 'en-us'
+title = 'GSoC 2026 - RTEMS'
+theme = 'risotto'
+
+[menus]
+	[[menus.main]]
+		identifier = "posts"
+		name = "Posts"
+		url = "/posts"
+		weight = 10
