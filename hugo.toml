@@ -9,3 +9,7 @@ theme = 'risotto'
 		name = "Posts"
 		url = "/posts"
 		weight = 10
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
