@@ -10,6 +10,15 @@ theme = 'risotto'
 		url = "/posts"
 		weight = 10
 
+[params]
+	subtitle = "purple-affogato's blog for GSoC 2026"
+	[params.theme]
+		palette = "tokyo-night-dark"
+	[params.about]
+		title = "GSoC 2026 - RTEMS Blog"
+		description = "purple-affogato's blog for GSoC 2026"
+		logo = "🐦‍⬛"
+
 [caches]
   [caches.images]
     dir = ':cacheDir/images'

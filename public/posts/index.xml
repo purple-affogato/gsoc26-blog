@@ -10,9 +10,9 @@
     <atom:link href="http://localhost:1313/rtems-gsoc26/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Project Intro</title>
-      <link>http://localhost:1313/rtems-gsoc26/posts/first-post/</link>
+      <link>http://localhost:1313/rtems-gsoc26/posts/project-intro/</link>
       <pubDate>Sun, 24 May 2026 22:30:22 -0700</pubDate>
-      <guid>http://localhost:1313/rtems-gsoc26/posts/first-post/</guid>
+      <guid>http://localhost:1313/rtems-gsoc26/posts/project-intro/</guid>
       <description>GSoC 2026 - Project Intro: Add MPCP &amp;amp; DPCP Support to RTEMS Happy to share that I&amp;rsquo;ll be contributing to the RTEMS project this summer as a GSoC contributor. My mentors for the summer will be by Kuan-Hsun Chen and Gedare Bloom.&#xA;My project involves implementing two locking protocols, MPCP and DPCP, to RTEMS based on the work of Junjie et al., and extending the SMP testsuite for these implementations.</description>
     </item>
   </channel>
