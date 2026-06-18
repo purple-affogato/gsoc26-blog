@@ -6,8 +6,15 @@
     <description>Recent content in Posts on GSoC 2026 - RTEMS</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 24 May 2026 22:30:22 -0700</lastBuildDate>
+    <lastBuildDate>Thu, 18 Jun 2026 00:26:11 -0700</lastBuildDate>
     <atom:link href="http://localhost:1313/rtems-gsoc26/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Week 1 Update</title>
+      <link>http://localhost:1313/rtems-gsoc26/posts/20260618-update/</link>
+      <pubDate>Thu, 18 Jun 2026 00:26:11 -0700</pubDate>
+      <guid>http://localhost:1313/rtems-gsoc26/posts/20260618-update/</guid>
+      <description>Week 1: MPCP Implementation This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.&#xA;My progress so far has been on applying the original patch from the research paper that inspired this project and beginning testing of the MPCP implementation. I used git apply --reject --include=&amp;quot;path/to/file&amp;quot; to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp;amp; MPCP implementations.</description>
+    </item>
     <item>
       <title>Project Intro</title>
       <link>http://localhost:1313/rtems-gsoc26/posts/project-intro/</link>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head><script src="/rtems-gsoc26/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=rtems-gsoc26/livereload" data-no-instant defer></script><title>Week 1 Update &ndash; GSoC 2026 - RTEMS</title>
+<meta name="description" content="purple-affogato&#39;s blog for GSoC 2026">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"/>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.4/css/academicons.min.css" integrity="sha512-IW0nhlW5MgNydsXJO40En2EoCkTTjZhI3yuODrZIc8cQ4h1XcF53PsqDHa09NqnkXuIe0Oiyyj171BqZFwISBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<link rel="stylesheet" href="http://localhost:1313/rtems-gsoc26/css/palettes/tokyo-night-dark.css">
+<link rel="stylesheet" href="http://localhost:1313/rtems-gsoc26/css/risotto.css">
+<link rel="stylesheet" href="http://localhost:1313/rtems-gsoc26/css/custom.css">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta property="og:title" content="Week 1 Update &ndash; GSoC 2026 - RTEMS" />
+<meta property="og:url" content="http://localhost:1313/rtems-gsoc26/posts/20260618-update/" />
+
+  
+    <meta property="og:description" content="purple-affogato&#39;s blog for GSoC 2026"/> 
+  
+
+<meta property="og:locale" content="en-us" />
+<meta property="og:image" content="" /></head>
+
+    <body>
+        <div class="page">
+
+            <header class="page__header"><nav class="page__nav main-nav">
+    <ul>
+      <li class="nomarker"><h1 class="page__logo"><a href="http://localhost:1313/rtems-gsoc26/" class="page__logo-inner">GSoC 2026 - RTEMS</a></h1></li>
+    
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="http://localhost:1313/rtems-gsoc26/posts" title="">Posts</a></li>
+    
+    </ul>
+</nav>
+
+</header>
+
+            <section class="page__body">
+    <header class="content__header">
+        <h1>Week 1 Update</h1>
+    </header>
+    <div class="content__body">
+        <h2 id="week-1-mpcp-implementation">Week 1: MPCP Implementation</h2>
+<p>This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.</p>
+<p>My progress so far has been on applying the <a href="https://github.com/JJShi92/RTEMS-Resource-Synchronization-Protocols/blob/master/RTEMS-5_3/RTEMS_patch_DPCP_MPCP.patch">original patch</a> from the research paper that inspired this project and beginning testing of the MPCP implementation. I used <code>git apply --reject --include=&quot;path/to/file&quot;</code> to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp; MPCP implementations. Along the way I&rsquo;ve also been taking notes on what each change in the patch does.</p>
+<p>Outside of just coding, I also reviewed RTEMS&rsquo; <a href="https://docs.rtems.org/docs/main/eng/coding.html">coding standards</a> and the <a href="https://ieeexplore.ieee.org/document/89257">original paper on MPCP</a> by R. Rajkumar. These helped me to:</p>
+<ol>
+<li>Understand what improvements I need to work on to the original code so that the MPCP implementation adheres to RTEMS&rsquo; standards.</li>
+<li>Understand what certain elements of the patch might&rsquo;ve been meant for. For example, one part of the patch adds a new function called _Thread_queue_Enqueue_busy(), which I initially was confused on its purpose as there were no comments describing what it does. My mentor suspected it had to do with busy-waiting that is needed for MPCP and advised me to check what the actual definition of MPCP entails to be able to comprehend what different parts of the patch were for.</li>
+</ol>
+<p>At the time of writing this, the implementation itself does seem to work on a basic level! It builds succesfully and is capable of passing a rudimentary test I wrote that tests the creation, obtaining, release, and deletion of a single MPCP semaphore:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;rtems.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;assert.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Init</span>( rtems_task_argument ignored )
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    (<span style="color:#66d9ef">void</span>) ignored;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	rtems_status_code sc;
+</span></span><span style="display:flex;"><span>	rtems_id sem_id;
+</span></span><span style="display:flex;"><span>	rtems_task_priority prio;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// creating the MPCP sem
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_semaphore_create</span>(
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">rtems_build_name</span>(<span style="color:#e6db74">&#39;M&#39;</span>, <span style="color:#e6db74">&#39;P&#39;</span>,<span style="color:#e6db74">&#39;C&#39;</span>,<span style="color:#e6db74">&#39;P&#39;</span>),
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>		RTEMS_BINARY_SEMAPHORE <span style="color:#f92672">|</span> RTEMS_MULTIPROCESSOR_PRIORITY_CEILING,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">&amp;</span>sem_id
+</span></span><span style="display:flex;"><span>	);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>( <span style="color:#e6db74">&#34;Created MPCP semaphore.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> );
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// obtaining MPCP sem
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_semaphore_obtain</span>( sem_id, RTEMS_WAIT, <span style="color:#ae81ff">4</span> );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// check priority was raised
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_task_set_priority</span>( RTEMS_SELF, RTEMS_CURRENT_PRIORITY, <span style="color:#f92672">&amp;</span>prio );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( prio <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>( <span style="color:#e6db74">&#34;Obtained MPCP semaphore.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// pause for a bit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#a6e22e">rtems_task_wake_after</span>( <span style="color:#ae81ff">10</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// releasing MPCP sem
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_semaphore_release</span>( sem_id );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// check priority was reset to old value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_task_set_priority</span>( RTEMS_SELF, RTEMS_CURRENT_PRIORITY, <span style="color:#f92672">&amp;</span>prio );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">assert</span>( prio <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">printf</span>( <span style="color:#e6db74">&#34;Released MPCP semaphore.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// delete the semaphore
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    sc <span style="color:#f92672">=</span> <span style="color:#a6e22e">rtems_semaphore_delete</span>( sem_id );
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">assert</span>( sc <span style="color:#f92672">==</span> RTEMS_SUCCESSFUL );
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>( <span style="color:#e6db74">&#34;Deleted MPCP semaphore.</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> );
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">exit</span>( <span style="color:#ae81ff">0</span> );
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_MICROSECONDS_PER_TICK 1000
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_APPLICATION_NEEDS_SIMPLE_CONSOLE_DRIVER
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_MAXIMUM_TASKS 32
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_MAXIMUM_SEMAPHORES 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_SCHEDULER_SIMPLE_SMP
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_INIT_TASK_PRIORITY 4
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_INIT_TASK_NAME     rtems_build_name( &#39;M&#39;, &#39;A&#39;, &#39;I&#39;, &#39;N&#39; )
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_RTEMS_INIT_TASKS_TABLE
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define CONFIGURE_INIT
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;rtems/confdefs.h&gt;</span><span style="color:#75715e">
+</span></span></span></code></pre></div><p>Currently, this code is taking the spot of the testsuite I plan on creating called &ldquo;smpmpcp01&rdquo;. This testsuite will cover all the cases I detailed in my project proposal and perhaps more. This testsuite along with revamping the MPCP implementation are my two tasks for this project. ₍ᐢ._.ᐢ₎♡</p>
+
+    </div>
+    <footer class="content__footer"></footer>
+
+            </section>
+
+            <section class="page__aside">
+                <div class="aside__about">
+<div class="aside__about">
+    <span class="about__logo" role="img">🐦‍⬛</span>&nbsp;
+    
+<h1 class="about__title">GSoC 2026 - RTEMS Blog</h1>
+<p class="about__description">purple-affogato&rsquo;s blog for GSoC 2026</p>
+</div>
+
+
+<ul class="aside__social-links">
+    
+</ul>
+</div>
+                <hr>
+                <div class="aside__content">
+    
+    
+        <p>
+            
+            2026-06-18
+        </p>
+    
+
+    
+
+                </div>
+            </section>
+
+            <footer class="page__footer"><p>
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+      
+      
+          
+            
+            
+                <br/><span class="active">$ echo $LANG<br/><b></b></span><br/>
+
+            
+          
+      
+    
+</p>
+<br /><br />
+<p class="copyright"></p>
+<p class="advertisement">Powered by <a href="https://gohugo.io/">hugo</a> and <a href="https://github.com/joeroe/risotto">risotto</a>.</p>
+</footer>
+
+        </div>
+    </body>
+
+</html>
