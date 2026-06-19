@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head><script src="/rtems-gsoc26/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=rtems-gsoc26/livereload" data-no-instant defer></script><title>Week 1 Update &ndash; GSoC 2026 - RTEMS</title>
+    <head><script src="/rtems-gsoc26/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=rtems-gsoc26/livereload" data-no-instant defer></script><title>2026-06-18 Update &ndash; GSoC 2026 - RTEMS</title>
 <meta name="description" content="purple-affogato&#39;s blog for GSoC 2026">
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Week 1 Update &ndash; GSoC 2026 - RTEMS" />
+<meta property="og:title" content="2026-06-18 Update &ndash; GSoC 2026 - RTEMS" />
 <meta property="og:url" content="http://localhost:1313/rtems-gsoc26/posts/20260618-update/" />
 
   
@@ -57,17 +57,35 @@
 
             <section class="page__body">
     <header class="content__header">
-        <h1>Week 1 Update</h1>
+        <h1>2026-06-18 Update</h1>
     </header>
     <div class="content__body">
         <h2 id="week-1-mpcp-implementation">Week 1: MPCP Implementation</h2>
 <p>This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.</p>
 <p>My progress so far has been on applying the <a href="https://github.com/JJShi92/RTEMS-Resource-Synchronization-Protocols/blob/master/RTEMS-5_3/RTEMS_patch_DPCP_MPCP.patch">original patch</a> from the research paper that inspired this project and beginning testing of the MPCP implementation. I used <code>git apply --reject --include=&quot;path/to/file&quot;</code> to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp; MPCP implementations. Along the way I&rsquo;ve also been taking notes on what each change in the patch does.</p>
+<p>These are the files I&rsquo;ve made changes to so far:</p>
+<pre tabindex="0"><code>cpukit/include/rtems/rtems/attr.h
+cpukit/include/rtems/rtems/semdata.h
+cpukit/include/rtems/rtems/semimpl.h
+cpukit/include/rtems/score/mpcp.h
+cpukit/include/rtems/score/mpcpimpl.h
+cpukit/libmisc/monitor/mon-sema.c
+cpukit/rtems/src/semcreate.c
+cpukit/rtems/src/semdelete.c
+cpukit/rtems/src/semflush.c
+cpukit/rtems/src/semobtain.c
+cpukit/rtems/src/semrelease.c
+cpukit/rtems/src/semsetpriority.c
+spec/build/testsuites/smptests/grp.yml
+spec/build/testsuites/smptests/smpmpcp01.yml
+testsuites/smptests/smpmpcp01/init.c
+</code></pre><p>The files mpcp.h and mpcpimpl.h are the main code additions from the research group, while the rest adds usage of the functions/structures/macros/etc. of MPCP to the RTEMS Classic API.</p>
 <p>Outside of just coding, I also reviewed RTEMS&rsquo; <a href="https://docs.rtems.org/docs/main/eng/coding.html">coding standards</a> and the <a href="https://ieeexplore.ieee.org/document/89257">original paper on MPCP</a> by R. Rajkumar. These helped me to:</p>
 <ol>
 <li>Understand what improvements I need to work on to the original code so that the MPCP implementation adheres to RTEMS&rsquo; standards.</li>
 <li>Understand what certain elements of the patch might&rsquo;ve been meant for. For example, one part of the patch adds a new function called _Thread_queue_Enqueue_busy(), which I initially was confused on its purpose as there were no comments describing what it does. My mentor suspected it had to do with busy-waiting that is needed for MPCP and advised me to check what the actual definition of MPCP entails to be able to comprehend what different parts of the patch were for.</li>
 </ol>
+<p>Some other facts about MPCP include that it specifically uses a priority queue, follows the idea that when a task&rsquo;s critical has higher priority over other tasks in their non-critical sections, and takes advantage of static binding (a task can only run on its host processor) to improve the ability of tasks to complete by their deadline. These factors should also be considered in MPCP&rsquo;s implementation in RTEMS.</p>
 <p>At the time of writing this, the implementation itself does seem to work on a basic level! It builds succesfully and is capable of passing a rudimentary test I wrote that tests the creation, obtaining, release, and deletion of a single MPCP semaphore:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;rtems.h&gt;</span><span style="color:#75715e">
