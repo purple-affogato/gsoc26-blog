@@ -60,7 +60,7 @@
         <h1>2026-06-18 Update</h1>
     </header>
     <div class="content__body">
-        <h2 id="week-1-mpcp-implementation">Week 1: MPCP Implementation</h2>
+        <h2 id="starting-with-the-mpcp-implementation">Starting with the MPCP Implementation</h2>
 <p>This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.</p>
 <p>My progress so far has been on applying the <a href="https://github.com/JJShi92/RTEMS-Resource-Synchronization-Protocols/blob/master/RTEMS-5_3/RTEMS_patch_DPCP_MPCP.patch">original patch</a> from the research paper that inspired this project and beginning testing of the MPCP implementation. I used <code>git apply --reject --include=&quot;path/to/file&quot;</code> to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp; MPCP implementations. Along the way I&rsquo;ve also been taking notes on what each change in the patch does.</p>
 <p>These are the files I&rsquo;ve made changes to so far:</p>

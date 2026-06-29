@@ -6,14 +6,21 @@
     <description>Recent content in Posts on GSoC 2026 - RTEMS</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 18 Jun 2026 00:26:11 -0700</lastBuildDate>
+    <lastBuildDate>Sun, 28 Jun 2026 17:03:43 -0700</lastBuildDate>
     <atom:link href="http://localhost:1313/rtems-gsoc26/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>20260628 Update</title>
+      <link>http://localhost:1313/rtems-gsoc26/posts/20260628-update/</link>
+      <pubDate>Sun, 28 Jun 2026 17:03:43 -0700</pubDate>
+      <guid>http://localhost:1313/rtems-gsoc26/posts/20260628-update/</guid>
+      <description>Creating the MPCP Testsuite This week, I was focused on creating the testsuite for MPCP. The tests I&amp;rsquo;ve planned for are:&#xA;test_mpcp_obtain_and_release() &amp;ndash;&amp;gt; simple MPCP obtain and release sequence. test_mpcp_flush_error() &amp;ndash;&amp;gt; ensures that RTEMS_NOT_DEFINED when attempting to flush a MPCP semaphore. test_mpcp_deadlock_error() &amp;ndash;&amp;gt; ensures RTEMS_INCORRECT_STATE is returned in a deadlock situation test_mpcp_nested_obtain_error() &amp;ndash;&amp;gt; ensures that RTEMS_INCORRECT_STATE is returned when a task attempts to obtain a semaphore it already owns. test_mpcp_multiple_obtain() &amp;ndash;&amp;gt; ensures the priority of a task is raised correctly when obtaining multiple MPCP semaphores of various ceiling priorities.</description>
+    </item>
     <item>
       <title>2026-06-18 Update</title>
       <link>http://localhost:1313/rtems-gsoc26/posts/20260618-update/</link>
       <pubDate>Thu, 18 Jun 2026 00:26:11 -0700</pubDate>
       <guid>http://localhost:1313/rtems-gsoc26/posts/20260618-update/</guid>
-      <description>Week 1: MPCP Implementation This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.&#xA;My progress so far has been on applying the original patch from the research paper that inspired this project and beginning testing of the MPCP implementation. I used git apply --reject --include=&amp;quot;path/to/file&amp;quot; to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp;amp; MPCP implementations.</description>
+      <description>Starting with the MPCP Implementation This post marks the first week of my GSoC project with RTEMS! ˖₊‧⁺˖.𖥔 ࣭ ˖๋ ࣭ ⭑ My current goal is to finish integratingMPCP into RTEMS by the time by midterm evaluation rolls around.&#xA;My progress so far has been on applying the original patch from the research paper that inspired this project and beginning testing of the MPCP implementation. I used git apply --reject --include=&amp;quot;path/to/file&amp;quot; to carefully read through the implementation so that I understand it, as well as separate the DPCP &amp;amp; MPCP implementations.</description>
     </item>
     <item>
       <title>Project Intro</title>
