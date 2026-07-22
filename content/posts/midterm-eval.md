@@ -7,6 +7,8 @@ draft = false
 
 For the first half of GSoC, my goal is to implement MPCP into RTEMS and open an MR with the completed work. The work that needs to be done for this can be split into 3 parts: **implementation, testing, and documentation**.
 
+Here is the corresponding [MPCP MR](https://gitlab.rtems.org/rtems/rtos/rtems/-/merge_requests/1358).
+
 ### Implementation of MPCP
 
 As previously mentioned, the MPCP implementation was initially created by the research group (Junjie Shi et al.) behind the paper, "Supporting Multiprocessor Resource Synchronization Protocols in RTEMS." More specifically, Jan Pham is credited for writing the initial implementations for MPCP & DPCP.
