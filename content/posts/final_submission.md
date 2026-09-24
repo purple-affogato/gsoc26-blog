@@ -44,7 +44,7 @@ The tests I wrote for the DPCP implementation can be found in smptets/smpdpcp01.
 
 - [Add MPCP Support to RTEMS PR](https://gitlab.rtems.org/rtems/rtos/rtems/-/merge_requests/1358)
 - [Add MPCP documentation to Classic API Guide PR](https://gitlab.rtems.org/rtems/docs/rtems-docs/-/merge_requests/247)
-- Add DPCP Support to RTEMS PR (TBA)
+- [Add DPCP Support to RTEMS PR](https://gitlab.rtems.org/rtems/rtos/rtems/-/merge_requests/1508)
 
 ## Lessons I learned
 
